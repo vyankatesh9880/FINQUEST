@@ -207,14 +207,6 @@ export const SeniorDashboard = ({ user }) => {
             Get ready for Live Paper Stock Trading, The Credit Card Debt Survival Maze, and 50-30-20 Cash Flow Speedrun.
             Conquer your 5 Advanced Modules to unlock trading simulator leverage!
           </p>
-          <button
-            onClick={() => setTopTab('learning')}
-            className="btn-funky btn-mint"
-            style={{ padding: '12px 28px' }}
-          >
-            <BookOpen size={18} />
-            <span>Back to Learning Track</span>
-          </button>
         </div>
       ) : showCompletion ? (
         /* 4. CELEBRATORY COMPLETION SCREEN (Triggered after Module 5) */
@@ -234,6 +226,8 @@ export const SeniorDashboard = ({ user }) => {
       ) : selectedModule ? (
         /* 3. DETAIL VIEW FOR SELECTED MODULE (Theory, Video, 10-Q Quiz with Next Button) */
         <ModuleDetailView
+          key={selectedModule.id}
+          category="senior"
           module={selectedModule}
           nextModule={nextModule}
           onCompleteModule={handleCompleteModule}
@@ -281,29 +275,29 @@ export const SeniorDashboard = ({ user }) => {
                 </p>
               </div>
 
-              {/* Reduced Size Track Progress Counter Badge */}
+              {/* Track Progress Counter Badge (Slightly increased size) */}
               <div style={{
                 background: 'rgba(20, 16, 45, 0.85)',
-                border: '1px solid rgba(85, 239, 196, 0.35)',
-                borderRadius: 'var(--radius-sm)',
-                padding: '6px 12px',
+                border: '1.5px solid rgba(85, 239, 196, 0.45)',
+                borderRadius: 'var(--radius-md)',
+                padding: '9px 18px',
                 display: 'flex',
                 alignItems: 'center',
-                gap: '8px',
-                boxShadow: '0 2px 10px rgba(0, 0, 0, 0.2)'
+                gap: '12px',
+                boxShadow: 'var(--shadow-glow-green)'
               }}>
-                <Trophy size={16} color="#55EFC4" />
+                <Trophy size={20} color="#55EFC4" />
                 <div>
-                  <span style={{ fontSize: '0.62rem', color: 'var(--text-dim)', textTransform: 'uppercase', fontWeight: 800, display: 'block', lineHeight: 1 }}>
+                  <span style={{ fontSize: '0.68rem', color: 'var(--text-dim)', textTransform: 'uppercase', fontWeight: 800, display: 'block', lineHeight: 1 }}>
                     Track Progress
                   </span>
                   <div style={{
                     fontFamily: 'var(--font-display)',
-                    fontSize: '0.92rem',
+                    fontSize: '1.05rem',
                     fontWeight: 800,
                     color: '#55EFC4',
-                    lineHeight: 1.1,
-                    marginTop: '2px'
+                    lineHeight: 1.15,
+                    marginTop: '3px'
                   }}>
                     {completedCount}/5 Modules Completed
                   </div>
@@ -371,18 +365,7 @@ export const SeniorDashboard = ({ user }) => {
                         }}>
                           <CheckCircle2 size={14} /> Completed ({savedScore}/10)
                         </span>
-                      ) : (
-                        <span style={{
-                          fontSize: '0.75rem',
-                          color: '#55EFC4',
-                          fontWeight: 700,
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '4px'
-                        }}>
-                          ⚡ Ready to Start
-                        </span>
-                      )}
+                      ) : null}
                     </div>
 
                     {/* Module Title with Icon */}
@@ -421,7 +404,7 @@ export const SeniorDashboard = ({ user }) => {
                       marginBottom: '20px'
                     }}>
                       <span style={{ background: 'rgba(255,255,255,0.06)', padding: '4px 8px', borderRadius: '6px' }}>
-                        📖 Comic Story
+                        📖 Engaging Theory
                       </span>
                       <span style={{ background: 'rgba(255,255,255,0.06)', padding: '4px 8px', borderRadius: '6px' }}>
                         🎬 Summary Video

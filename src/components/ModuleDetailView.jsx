@@ -15,6 +15,7 @@ import {
 import { QuizSection } from './QuizSection';
 
 export const ModuleDetailView = ({ 
+  category = 'junior',
   module, 
   nextModule,
   onCompleteModule, 
@@ -23,6 +24,21 @@ export const ModuleDetailView = ({
   onBackToList 
 }) => {
   const [activeSubTab, setActiveSubTab] = useState('theory'); // 'theory' | 'video' | 'quiz'
+
+  // Always reset to Engaging Theory when module changes
+  React.useEffect(() => {
+    setActiveSubTab('theory');
+  }, [module.id]);
+
+  // Determine teacher credit based on category and module
+  const getInstructor = (moduleId, cat) => {
+    const isJunior = cat === 'junior' || cat === 'grade5-7';
+    if (isJunior) {
+      return moduleId <= 3 ? 'By Anushka Mam' : 'By Vyankatesh Sir';
+    } else {
+      return moduleId <= 3 ? 'By Shreya Mam' : 'By Nirmal Sir';
+    }
+  };
 
   return (
     <div className="animate-pop-in" style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
@@ -117,7 +133,7 @@ export const ModuleDetailView = ({
             }}
           >
             <BookOpen size={16} />
-            <span>1. Comic Theory & Real Life</span>
+            <span>1. Engaging Theory</span>
           </button>
 
           <button
@@ -161,7 +177,7 @@ export const ModuleDetailView = ({
             }}
           >
             <HelpCircle size={16} />
-            <span>3. 10-Question MCQ Quiz (+1 Fire / 0 😢)</span>
+            <span>3. 10-Question MCQ Quiz</span>
           </button>
         </div>
       </div>
@@ -285,34 +301,24 @@ export const ModuleDetailView = ({
             </div>
           </div>
 
-          {/* Action Row */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '28px', flexWrap: 'wrap', gap: '12px' }}>
-            <span style={{ fontSize: '0.85rem', color: 'var(--text-dim)' }}>
-              Completed reading? Watch the 3-minute summary video or jump straight to the quiz!
-            </span>
-            <div style={{ display: 'flex', gap: '10px' }}>
-              <button
-                onClick={() => setActiveSubTab('video')}
-                className="btn-funky"
-                style={{
-                  background: 'rgba(255, 255, 255, 0.1)',
-                  color: '#fff',
-                  padding: '10px 18px',
-                  fontSize: '0.9rem'
-                }}
-              >
-                <span>Watch Video</span>
-                <Video size={16} />
-              </button>
-              <button
-                onClick={() => setActiveSubTab('quiz')}
-                className="btn-funky btn-yellow-funky"
-                style={{ padding: '10px 20px', fontSize: '0.9rem' }}
-              >
-                <span>Take 10-Q Quiz</span>
-                <ArrowRight size={16} />
-              </button>
-            </div>
+          {/* Bottom Center: Watch Video Button */}
+          <div style={{ display: 'flex', justifyContent: 'center', marginTop: '32px' }}>
+            <button
+              onClick={() => setActiveSubTab('video')}
+              className="btn-funky btn-yellow-funky"
+              style={{
+                padding: '14px 42px',
+                fontSize: '1.05rem',
+                fontWeight: 800,
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '10px',
+                boxShadow: 'var(--shadow-glow-yellow)'
+              }}
+            >
+              <Play size={20} fill="#1a1530" color="#1a1530" />
+              <span>Watch Video</span>
+            </button>
           </div>
         </div>
       )}
@@ -381,6 +387,30 @@ export const ModuleDetailView = ({
               </div>
             </div>
 
+            {/* Teacher Credit Below Video */}
+            <div style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '8px',
+              background: 'rgba(255, 255, 255, 0.08)',
+              border: `1.5px solid ${module.themeColor}77`,
+              padding: '8px 22px',
+              borderRadius: 'var(--radius-full)',
+              marginBottom: '18px',
+              boxShadow: '0 4px 15px rgba(0, 0, 0, 0.25)'
+            }}>
+              <span style={{ fontSize: '1.1rem' }}>🎓</span>
+              <span style={{
+                fontFamily: 'var(--font-display)',
+                fontSize: '1.05rem',
+                fontWeight: 800,
+                color: module.themeColor,
+                letterSpacing: '0.3px'
+              }}>
+                {getInstructor(module.id, category)}
+              </span>
+            </div>
+
             <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', lineHeight: 1.5, marginBottom: '24px' }}>
               {module.videoInfo.summary}
             </p>
@@ -408,7 +438,10 @@ export const ModuleDetailView = ({
               onCompleteModule(module.id, finalScore);
             }
           }}
-          onNextModule={nextModule ? () => onNextModule(nextModule.id) : null}
+          onNextModule={nextModule ? () => {
+            setActiveSubTab('theory');
+            onNextModule(nextModule.id);
+          } : null}
           onFinishTrack={onFinishTrack}
         />
       )}

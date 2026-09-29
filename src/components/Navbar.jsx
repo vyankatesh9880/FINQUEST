@@ -6,8 +6,8 @@ export const Navbar = ({ user, onLogout }) => {
 
   // Friendly label for grade category
   const getCategoryLabel = (cat) => {
-    if (cat === 'grade5-7') return '5th to 7th Grade (Money Explorers)';
-    if (cat === 'grade8-10') return '8th to 10th Grade (Market Masters)';
+    if (cat === 'grade5-7') return '5th to 7th Grade';
+    if (cat === 'grade8-10') return '8th to 10th Grade';
     return cat || 'Student';
   };
 
@@ -250,8 +250,8 @@ export const Navbar = ({ user, onLogout }) => {
               </div>
             </div>
 
-            {/* Switch Profile / Log Out Option inside Modal */}
-            <div style={{ display: 'flex', gap: '10px' }}>
+            {/* Sign Out Option inside Modal */}
+            <div>
               <button
                 onClick={() => {
                   setShowProfileModal(false);
@@ -259,23 +259,17 @@ export const Navbar = ({ user, onLogout }) => {
                 }}
                 className="btn-funky"
                 style={{
-                  flex: 1,
-                  padding: '10px',
-                  fontSize: '0.9rem',
-                  background: 'rgba(255, 118, 117, 0.15)',
-                  border: '1px solid rgba(255, 118, 117, 0.3)',
-                  color: '#FF7675'
+                  width: '100%',
+                  padding: '12px',
+                  fontSize: '0.95rem',
+                  fontWeight: 700,
+                  background: 'rgba(255, 118, 117, 0.18)',
+                  border: '1px solid rgba(255, 118, 117, 0.4)',
+                  color: '#FF7675',
+                  cursor: 'pointer'
                 }}
               >
-                <span>Switch / Sign Out</span>
-              </button>
-
-              <button
-                onClick={() => setShowProfileModal(false)}
-                className="btn-funky btn-yellow-funky"
-                style={{ flex: 1, padding: '10px', fontSize: '0.9rem' }}
-              >
-                <span>Close</span>
+                <span>Sign Out</span>
               </button>
             </div>
           </div>

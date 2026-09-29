@@ -4,6 +4,7 @@ import {
   CheckCircle2, 
   HelpCircle, 
   ArrowRight, 
+  ArrowLeft,
   RotateCcw, 
   Trophy, 
   Sparkles,
@@ -19,17 +20,22 @@ export const QuizSection = ({
   onFinishTrack
 }) => {
   const [currentIdx, setCurrentIdx] = useState(0);
-  const [selectedOption, setSelectedOption] = useState(null);
-  const [hasAnswered, setHasAnswered] = useState(false);
-  const [score, setScore] = useState(0);
-  const [answeredHistory, setAnsweredHistory] = useState([]);
+  // Map of question index -> { selectedOption: number, isCorrect: boolean }
+  const [userAnswers, setUserAnswers] = useState({});
   const [quizFinished, setQuizFinished] = useState(false);
 
   const currentQ = questions[currentIdx];
+  const currentAnswer = userAnswers[currentIdx];
+  const hasAnswered = currentAnswer !== undefined;
+  const selectedOption = currentAnswer?.selectedOption;
+  const isCurrentCorrect = hasAnswered && currentAnswer.isCorrect;
+  const isCurrentWrong = hasAnswered && !currentAnswer.isCorrect;
+
+  // Calculate live score
+  const score = Object.values(userAnswers).filter(a => a.isCorrect).length;
 
   // Fire celebratory burst effect for correct answers
   const triggerCelebration = () => {
-    // Left fire-shot cannon
     confetti({
       particleCount: 60,
       angle: 60,
@@ -37,7 +43,6 @@ export const QuizSection = ({
       origin: { x: 0.1, y: 0.7 },
       colors: ['#00B894', '#55EFC4', '#FFA502', '#FD79A8']
     });
-    // Right fire-shot cannon
     confetti({
       particleCount: 60,
       angle: 120,
@@ -48,38 +53,29 @@ export const QuizSection = ({
   };
 
   const handleSelectOption = (idx) => {
-    if (hasAnswered) return;
-    setSelectedOption(idx);
-    setHasAnswered(true);
+    if (hasAnswered) return; // Freeze once chosen
 
     const isCorrect = idx === currentQ.correctIndex;
-    const newScore = isCorrect ? score + 1 : score;
+    setUserAnswers(prev => ({
+      ...prev,
+      [currentIdx]: {
+        selectedOption: idx,
+        isCorrect
+      }
+    }));
+
     if (isCorrect) {
-      setScore(newScore);
       triggerCelebration();
     }
-
-    setAnsweredHistory(prev => [
-      ...prev,
-      {
-        questionId: currentQ.id,
-        userPick: idx,
-        isCorrect,
-        correctPick: currentQ.correctIndex,
-        explanation: currentQ.explanation
-      }
-    ]);
   };
 
   const handleNext = () => {
     if (currentIdx + 1 < questions.length) {
       setCurrentIdx(prev => prev + 1);
-      setSelectedOption(null);
-      setHasAnswered(false);
     } else {
       setQuizFinished(true);
-      if (score >= 7) {
-        // Grand finale celebration
+      const finalScore = Object.values(userAnswers).filter(a => a.isCorrect).length;
+      if (finalScore >= 7) {
         confetti({
           particleCount: 120,
           spread: 80,
@@ -88,17 +84,20 @@ export const QuizSection = ({
         });
       }
       if (onCompleteQuiz) {
-        onCompleteQuiz(score + (selectedOption === currentQ.correctIndex ? 0 : 0));
+        onCompleteQuiz(finalScore);
       }
+    }
+  };
+
+  const handlePrev = () => {
+    if (currentIdx > 0) {
+      setCurrentIdx(prev => prev - 1);
     }
   };
 
   const handleRestart = () => {
     setCurrentIdx(0);
-    setSelectedOption(null);
-    setHasAnswered(false);
-    setScore(0);
-    setAnsweredHistory([]);
+    setUserAnswers({});
     setQuizFinished(false);
   };
 
@@ -216,9 +215,6 @@ export const QuizSection = ({
     );
   }
 
-  const isCurrentCorrect = hasAnswered && selectedOption === currentQ.correctIndex;
-  const isCurrentWrong = hasAnswered && selectedOption !== currentQ.correctIndex;
-
   // Split explanation into 2 clean lines
   const explanationLines = currentQ.explanation ? currentQ.explanation.split('\n') : [];
 
@@ -282,11 +278,11 @@ export const QuizSection = ({
           color: '#55EFC4'
         }}>
           <Trophy size={16} color="#FFA502" />
-          <span>Score: {score} / 10</span>
+          <span>Score: {score} / {questions.length}</span>
         </div>
       </div>
 
-      {/* Progress Track Dots */}
+      {/* Progress Track Dots (Clickable Jump Navigation) */}
       <div style={{
         display: 'flex',
         gap: '6px',
@@ -296,22 +292,27 @@ export const QuizSection = ({
       }}>
         {questions.map((q, idx) => {
           let dotColor = 'rgba(255, 255, 255, 0.15)';
-          if (idx < currentIdx) {
-            const hist = answeredHistory.find(h => h.questionId === q.id);
-            dotColor = hist?.isCorrect ? '#00B894' : '#FF7675';
+          const ans = userAnswers[idx];
+          if (ans) {
+            dotColor = ans.isCorrect ? '#00B894' : '#FF7675';
           } else if (idx === currentIdx) {
             dotColor = '#FFA502';
           }
           return (
-            <div
+            <button
               key={q.id}
+              onClick={() => setCurrentIdx(idx)}
+              title={`Jump to Question ${idx + 1}`}
               style={{
                 flex: 1,
-                minWidth: '20px',
-                height: '6px',
+                minWidth: '24px',
+                height: '8px',
                 borderRadius: 'var(--radius-full)',
                 background: dotColor,
-                transition: 'all 0.3s ease'
+                border: idx === currentIdx ? '1.5px solid #fff' : 'none',
+                cursor: 'pointer',
+                transition: 'all 0.3s ease',
+                padding: 0
               }}
             />
           );
@@ -454,20 +455,55 @@ export const QuizSection = ({
               </p>
             ))}
           </div>
-
-          {/* Next Button */}
-          <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '14px' }}>
-            <button
-              onClick={handleNext}
-              className={`btn-funky ${isCurrentCorrect ? 'btn-mint' : 'btn-yellow-funky'}`}
-              style={{ padding: '10px 22px', fontSize: '0.95rem' }}
-            >
-              <span>{currentIdx + 1 === questions.length ? 'View Final Results' : 'Next Question'}</span>
-              <ArrowRight size={16} />
-            </button>
-          </div>
         </div>
       )}
+
+      {/* Navigation Controls: Previous and Next Question */}
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        marginTop: '24px',
+        paddingTop: '16px',
+        borderTop: '1px solid rgba(255, 255, 255, 0.08)',
+        gap: '12px',
+        flexWrap: 'wrap'
+      }}>
+        <button
+          onClick={handlePrev}
+          disabled={currentIdx === 0}
+          className="btn-funky"
+          style={{
+            padding: '10px 20px',
+            fontSize: '0.92rem',
+            background: currentIdx === 0 ? 'rgba(255, 255, 255, 0.04)' : 'rgba(255, 255, 255, 0.1)',
+            color: currentIdx === 0 ? 'var(--text-dim)' : '#fff',
+            cursor: currentIdx === 0 ? 'not-allowed' : 'pointer',
+            border: '1px solid rgba(255, 255, 255, 0.15)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px'
+          }}
+        >
+          <ArrowLeft size={16} />
+          <span>Previous Question</span>
+        </button>
+
+        <button
+          onClick={handleNext}
+          className={`btn-funky ${isCurrentCorrect ? 'btn-mint' : 'btn-yellow-funky'}`}
+          style={{
+            padding: '10px 24px',
+            fontSize: '0.95rem',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px'
+          }}
+        >
+          <span>{currentIdx + 1 === questions.length ? 'View Final Results' : 'Next Question'}</span>
+          <ArrowRight size={16} />
+        </button>
+      </div>
     </div>
   );
 };
