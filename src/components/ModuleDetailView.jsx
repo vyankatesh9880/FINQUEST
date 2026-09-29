@@ -14,7 +14,14 @@ import {
 } from 'lucide-react';
 import { QuizSection } from './QuizSection';
 
-export const ModuleDetailView = ({ module, onCompleteModule, onBackToList }) => {
+export const ModuleDetailView = ({ 
+  module, 
+  nextModule,
+  onCompleteModule, 
+  onNextModule,
+  onFinishTrack,
+  onBackToList 
+}) => {
   const [activeSubTab, setActiveSubTab] = useState('theory'); // 'theory' | 'video' | 'quiz'
 
   return (
@@ -401,6 +408,8 @@ export const ModuleDetailView = ({ module, onCompleteModule, onBackToList }) => 
               onCompleteModule(module.id, finalScore);
             }
           }}
+          onNextModule={nextModule ? () => onNextModule(nextModule.id) : null}
+          onFinishTrack={onFinishTrack}
         />
       )}
     </div>

@@ -10,7 +10,14 @@ import {
   Zap
 } from 'lucide-react';
 
-export const QuizSection = ({ questions, moduleTitle, moduleTheme = '#6C5CE7', onCompleteQuiz }) => {
+export const QuizSection = ({ 
+  questions, 
+  moduleTitle, 
+  moduleTheme = '#6C5CE7', 
+  onCompleteQuiz,
+  onNextModule,
+  onFinishTrack
+}) => {
   const [currentIdx, setCurrentIdx] = useState(0);
   const [selectedOption, setSelectedOption] = useState(null);
   const [hasAnswered, setHasAnswered] = useState(false);
@@ -162,14 +169,47 @@ export const QuizSection = ({ questions, moduleTitle, moduleTheme = '#6C5CE7', o
           </span>
         </div>
 
-        <div>
+        {/* Action Buttons: Next Module or Complete Track */}
+        <div style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          gap: '14px',
+          flexWrap: 'wrap'
+        }}>
+          {onNextModule ? (
+            <button
+              onClick={onNextModule}
+              className="btn-funky btn-mint"
+              style={{ padding: '14px 32px', fontSize: '1.05rem', minWidth: '220px' }}
+            >
+              <span>Continue to Next Module</span>
+              <ArrowRight size={20} />
+            </button>
+          ) : (
+            <button
+              onClick={onFinishTrack}
+              className="btn-funky btn-mint"
+              style={{ padding: '14px 32px', fontSize: '1.05rem', minWidth: '220px' }}
+            >
+              <span>🎓 View Track Completion Ceremony</span>
+              <Sparkles size={20} />
+            </button>
+          )}
+
           <button
             onClick={handleRestart}
-            className="btn-funky btn-yellow-funky"
-            style={{ padding: '12px 28px', fontSize: '1rem' }}
+            className="btn-funky"
+            style={{
+              padding: '12px 24px',
+              fontSize: '0.95rem',
+              background: 'rgba(255, 255, 255, 0.08)',
+              color: '#fff',
+              border: '1px solid rgba(255, 255, 255, 0.15)'
+            }}
           >
-            <RotateCcw size={18} />
-            <span>Retake 10-Question Quiz</span>
+            <RotateCcw size={16} />
+            <span>Retake 10-Q Quiz</span>
           </button>
         </div>
       </div>
