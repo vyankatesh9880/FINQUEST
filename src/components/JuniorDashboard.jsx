@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import confetti from 'canvas-confetti';
-import { 
-  BookOpen, 
-  Gamepad2, 
-  Sparkles, 
-  CheckCircle2, 
-  Lock, 
-  Trophy, 
+import {
+  BookOpen,
+  Gamepad2,
+  Sparkles,
+  CheckCircle2,
+  Lock,
+  Trophy,
   ArrowRight,
   RotateCcw
 } from 'lucide-react';
@@ -17,13 +17,13 @@ import { CompletionCelebration } from './CompletionCelebration';
 export const JuniorDashboard = ({ user }) => {
   // Top Navbar Center Tab: "Learning" | "Games"
   const [topTab, setTopTab] = useState('learning');
-  
+
   // Selected module (null means showing module list track)
   const [selectedModuleId, setSelectedModuleId] = useState(null);
 
   // Show track completion screen
   const [showCompletion, setShowCompletion] = useState(false);
-  
+
   // Strict progression state:
   // Default: Module 1 unlocked and not completed yet. Modules 2..5 locked.
   const [moduleProgress, setModuleProgress] = useState(() => {
@@ -48,9 +48,9 @@ export const JuniorDashboard = ({ user }) => {
     setModuleProgress(prev => {
       const updated = {
         ...prev,
-        [modId]: { 
-          score: Math.max(finalScore, prev[modId]?.score || 0), 
-          completed: true 
+        [modId]: {
+          score: Math.max(finalScore, prev[modId]?.score || 0),
+          completed: true
         }
       };
       try {
@@ -137,8 +137,8 @@ export const JuniorDashboard = ({ user }) => {
               fontFamily: 'var(--font-display)',
               fontSize: '1rem',
               fontWeight: 700,
-              background: topTab === 'learning' 
-                ? 'linear-gradient(135deg, #FFA502 0%, #FDCB6E 100%)' 
+              background: topTab === 'learning'
+                ? 'linear-gradient(135deg, #FFA502 0%, #FDCB6E 100%)'
                 : 'transparent',
               color: topTab === 'learning' ? '#1a1530' : 'var(--text-muted)',
               boxShadow: topTab === 'learning' ? '0 4px 15px rgba(255, 165, 2, 0.4)' : 'none',
@@ -163,8 +163,8 @@ export const JuniorDashboard = ({ user }) => {
               fontFamily: 'var(--font-display)',
               fontSize: '1rem',
               fontWeight: 700,
-              background: topTab === 'games' 
-                ? 'linear-gradient(135deg, #FD79A8 0%, #FF7675 100%)' 
+              background: topTab === 'games'
+                ? 'linear-gradient(135deg, #FD79A8 0%, #FF7675 100%)'
                 : 'transparent',
               color: topTab === 'games' ? '#fff' : 'var(--text-muted)',
               boxShadow: topTab === 'games' ? '0 4px 15px rgba(253, 121, 168, 0.4)' : 'none',
@@ -325,8 +325,8 @@ export const JuniorDashboard = ({ user }) => {
                     display: 'flex',
                     flexDirection: 'column',
                     justifyContent: 'space-between',
-                    border: isCompleted 
-                      ? '1.5px solid rgba(0, 184, 148, 0.45)' 
+                    border: isCompleted
+                      ? '1.5px solid rgba(0, 184, 148, 0.45)'
                       : `1.5px solid ${mod.themeColor}55`,
                     background: isCompleted
                       ? 'linear-gradient(135deg, rgba(0, 184, 148, 0.12) 0%, rgba(20, 16, 45, 0.85) 100%)'
