@@ -7,14 +7,19 @@ import {
   Lock,
   Trophy,
   ArrowRight,
-  RotateCcw
+  RotateCcw,
+  Gamepad2
 } from 'lucide-react';
 
 import { JUNIOR_MODULES } from '../data/juniorModulesData';
 import { ModuleDetailView } from './ModuleDetailView';
 import { CompletionCelebration } from './CompletionCelebration';
+import { GamingArena } from './GamingArena';
 
 export const JuniorDashboard = ({ user }) => {
+
+  // Active view toggle: 'learning' (Learning Track) or 'arena' (Gaming Arena)
+  const [activeView, setActiveView] = useState('learning');
 
   // Selected module (null means showing module list track)
   const [selectedModuleId, setSelectedModuleId] = useState(null);
@@ -147,7 +152,7 @@ export const JuniorDashboard = ({ user }) => {
       }}
     >
 
-      {/* LEARNING TRACK */}
+      {/* NAVIGATION BAR & VIEW TOGGLE */}
       {!showCompletion && !selectedModule && (
         <div
           style={{
@@ -167,29 +172,69 @@ export const JuniorDashboard = ({ user }) => {
               padding: '6px',
               borderRadius: 'var(--radius-full)',
               boxShadow:
-                '0 8px 30px rgba(0, 0, 0, 0.4), var(--shadow-glow-purple)'
+                '0 8px 30px rgba(0, 0, 0, 0.4), var(--shadow-glow-purple)',
+              gap: '6px'
             }}
           >
-            <div
+            {/* Learning Track Button */}
+            <button
+              onClick={() => setActiveView('learning')}
               style={{
                 display: 'flex',
                 alignItems: 'center',
                 gap: '8px',
-                padding: '10px 28px',
+                padding: '10px 24px',
                 borderRadius: 'var(--radius-full)',
                 fontFamily: 'var(--font-display)',
                 fontSize: '1rem',
                 fontWeight: 700,
+                border: 'none',
+                cursor: 'pointer',
+                transition: 'all 0.25s ease',
                 background:
-                  'linear-gradient(135deg, #FFA502 0%, #FDCB6E 100%)',
-                color: '#1a1530',
+                  activeView === 'learning'
+                    ? 'linear-gradient(135deg, #FFA502 0%, #FDCB6E 100%)'
+                    : 'transparent',
+                color: activeView === 'learning' ? '#1a1530' : 'var(--text-muted)',
                 boxShadow:
-                  '0 4px 15px rgba(255, 165, 2, 0.4)'
+                  activeView === 'learning'
+                    ? '0 4px 15px rgba(255, 165, 2, 0.4)'
+                    : 'none'
               }}
             >
               <BookOpen size={18} />
               <span>Learning Track</span>
-            </div>
+            </button>
+
+            {/* Gaming Arena Button */}
+            <button
+              onClick={() => setActiveView('arena')}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                padding: '10px 24px',
+                borderRadius: 'var(--radius-full)',
+                fontFamily: 'var(--font-display)',
+                fontSize: '1rem',
+                fontWeight: 700,
+                border: 'none',
+                cursor: 'pointer',
+                transition: 'all 0.25s ease',
+                background:
+                  activeView === 'arena'
+                    ? 'linear-gradient(135deg, #6C5CE7 0%, #FD79A8 100%)'
+                    : 'transparent',
+                color: activeView === 'arena' ? '#ffffff' : 'var(--text-muted)',
+                boxShadow:
+                  activeView === 'arena'
+                    ? '0 4px 18px rgba(108, 92, 231, 0.45)'
+                    : 'none'
+              }}
+            >
+              <Gamepad2 size={18} />
+              <span>Gaming Arena 🎮</span>
+            </button>
           </div>
         </div>
       )}
@@ -222,6 +267,12 @@ export const JuniorDashboard = ({ user }) => {
           onFinishTrack={handleFinishTrack}
           onBackToList={() => setSelectedModuleId(null)}
         />
+
+      ) : activeView === 'arena' ? (
+
+        /* FINANCIAL GAMES ARENA VIEW */
+
+        <GamingArena user={user} category="junior" />
 
       ) : (
 

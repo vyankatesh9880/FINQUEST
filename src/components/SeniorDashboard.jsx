@@ -8,14 +8,19 @@ import {
   Lock,
   Trophy,
   ArrowRight,
-  RotateCcw
+  RotateCcw,
+  Gamepad2
 } from 'lucide-react';
 
 import { SENIOR_MODULES } from '../data/seniorModulesData';
 import { ModuleDetailView } from './ModuleDetailView';
 import { CompletionCelebration } from './CompletionCelebration';
+import { GamingArena } from './GamingArena';
 
 export const SeniorDashboard = ({ user }) => {
+
+  // Active view toggle: 'learning' (Learning Track) or 'arena' (Gaming Arena)
+  const [activeView, setActiveView] = useState('learning');
 
   // Selected module
   const [selectedModuleId, setSelectedModuleId] = useState(null);
@@ -153,8 +158,7 @@ export const SeniorDashboard = ({ user }) => {
       }}
     >
 
-      {/* LEARNING TRACK HEADER */}
-
+      {/* NAVIGATION BAR & VIEW TOGGLE */}
       {!showCompletion && !selectedModule && (
         <div
           style={{
@@ -174,29 +178,69 @@ export const SeniorDashboard = ({ user }) => {
               padding: '6px',
               borderRadius: 'var(--radius-full)',
               boxShadow:
-                '0 8px 30px rgba(0, 0, 0, 0.4), var(--shadow-glow-green)'
+                '0 8px 30px rgba(0, 0, 0, 0.4), var(--shadow-glow-green)',
+              gap: '6px'
             }}
           >
-            <div
+            {/* Learning Track Button */}
+            <button
+              onClick={() => setActiveView('learning')}
               style={{
                 display: 'flex',
                 alignItems: 'center',
                 gap: '8px',
-                padding: '10px 28px',
+                padding: '10px 24px',
                 borderRadius: 'var(--radius-full)',
                 fontFamily: 'var(--font-display)',
                 fontSize: '1rem',
                 fontWeight: 700,
+                border: 'none',
+                cursor: 'pointer',
+                transition: 'all 0.25s ease',
                 background:
-                  'linear-gradient(135deg, #00B894 0%, #55EFC4 100%)',
-                color: '#0b2e25',
+                  activeView === 'learning'
+                    ? 'linear-gradient(135deg, #00B894 0%, #55EFC4 100%)'
+                    : 'transparent',
+                color: activeView === 'learning' ? '#0b2e25' : 'var(--text-muted)',
                 boxShadow:
-                  '0 4px 15px rgba(0, 184, 148, 0.4)'
+                  activeView === 'learning'
+                    ? '0 4px 15px rgba(0, 184, 148, 0.4)'
+                    : 'none'
               }}
             >
               <BookOpen size={18} />
               <span>Learning Track</span>
-            </div>
+            </button>
+
+            {/* Gaming Arena Button */}
+            <button
+              onClick={() => setActiveView('arena')}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                padding: '10px 24px',
+                borderRadius: 'var(--radius-full)',
+                fontFamily: 'var(--font-display)',
+                fontSize: '1rem',
+                fontWeight: 700,
+                border: 'none',
+                cursor: 'pointer',
+                transition: 'all 0.25s ease',
+                background:
+                  activeView === 'arena'
+                    ? 'linear-gradient(135deg, #6C5CE7 0%, #FD79A8 100%)'
+                    : 'transparent',
+                color: activeView === 'arena' ? '#ffffff' : 'var(--text-muted)',
+                boxShadow:
+                  activeView === 'arena'
+                    ? '0 4px 18px rgba(108, 92, 231, 0.45)'
+                    : 'none'
+              }}
+            >
+              <Gamepad2 size={18} />
+              <span>Gaming Arena 🎮</span>
+            </button>
           </div>
         </div>
       )}
@@ -230,6 +274,12 @@ export const SeniorDashboard = ({ user }) => {
           onFinishTrack={handleFinishTrack}
           onBackToList={() => setSelectedModuleId(null)}
         />
+
+      ) : activeView === 'arena' ? (
+
+        /* FINANCIAL GAMES ARENA VIEW */
+
+        <GamingArena user={user} category="senior" />
 
       ) : (
 
